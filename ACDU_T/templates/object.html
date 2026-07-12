@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>{{ obj.Name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<a href="javascript:history.back()" class="btn btn-secondary">
+    ← Назад
+</a>
+<nav class="breadcrumbs">
+
+    <a href="/">🏠 Главная</a>
+
+    {% if group %}
+        <span>/</span>
+
+        <a href="/#{{ group|replace(' ','_')|lower }}">
+            {{ group }}
+        </a>
+
+        <span>/</span>
+    {% endif %}
+
+    <span class="current">
+        {{ obj.Name }}
+    </span>
+
+</nav>
+<h1>{{ obj.Name }}</h1>
+<div class="info-card">
+    <table>
+        <tr>
+            <td>ID объекта</td>
+            <td>{{ obj.ID }}</td>
+        </tr>
+
+        <tr>
+            <td>Название</td>
+            <td>{{ obj.Name }}</td>
+        </tr>
+
+        <tr>
+            <td>ParentID</td>
+            <td>{{ obj.ParentID }}</td>
+        </tr>
+
+        <tr>
+            <td>Тип</td>
+            <td>{{ obj.Type }}</td>
+        </tr>
+
+        <tr>
+            <td>Номер</td>
+            <td>{{ obj.Number }}</td>
+        </tr>
+
+        <tr>
+            <td>RealID</td>
+            <td>{{ obj.RealID }}</td>
+        </tr>
+
+        <tr>
+            <td>UserData</td>
+            <td>{{ obj.UserData }}</td>
+        </tr>
+
+        <tr>
+            <td>Описание</td>
+            <td>
+                {% if obj.Description %}
+                    {{ obj.Description }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Обновление</td>
+            <td>
+                {% if obj.Updated %}
+                    <span class="badge badge-green">
+                Да
+            </span>
+                {% else %}
+                    <span class="badge badge-red">
+                Нет
+            </span>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+
+<h2>Свойства</h2>
+
+<table>
+
+    <tr>
+        <th>ID</th>
+        <th>Свойство</th>
+        <th>Значение</th>
+        <th>Качество</th>
+        <th>Время</th>
+    </tr>
+
+    {% for p in props %}
+        <tr>
+            <td>{{ p.ID }}</td>
+            <td>{{ p.Name }}</td>
+            <td class="value">
+                {% if p.Value %}
+                    {{ p.Value }}
+                {% else %}
+                    NULL
+                {% endif %}
+            </td>
+            <td>{{ p.Quality }}</td>
+            <td>{{ p.TimeStamp }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

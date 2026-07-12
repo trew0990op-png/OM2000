@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>OM2000</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<h1>OM2000</h1>
+
+<div class="stats-box">
+    <h3>Статистика</h3>
+    <table>
+        <tr>
+            <td><b>Всего объектов: {{ stats["Всего объектов"] }}</b></td>
+            <td><b>ТИТ: {{ stats["ТИТ"]}}</b></td>
+            <td><b>ТС: {{ stats["ТС"] }}</b></td>
+            <td><b>Измерения: {{ stats["Измерения"] }}</b></td>
+            <td><b>Сигналы: {{ stats["Сигналы"] }}</b></td>
+            <td>Прочее: {{ stats["Прочее"] }}</td>
+        </tr>
+    </table>
+</div>
+
+<form method="get">
+    <input
+            type="text"
+            name="q"
+            placeholder="Поиск..."
+            value="{{ search }}">
+    <button type="submit" class="btn">
+        🔍 Найти
+    </button>
+
+    {% if search %}
+        <a href="/" class="btn btn-secondary">
+            ✖ Сбросить
+        </a>
+    {% endif %}
+</form>
+
+{% for group, items in groups.items() %}
+    <details id="{{ group|replace(' ','_')|lower }}" open>
+        <summary>{{ group }} ({{ items|length }})</summary>
+        <table>
+            <thead>
+            <tr>
+                <th class="sortable" data-col="0" data-type="number">ID</th>
+                <th class="sortable" data-col="1" data-type="string">Имя</th>
+                <th class="sortable" data-col="2" data-type="string">Описание</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in items %}
+                <tr>
+                    <td>{{ highlight(obj.id, search) }}</td>
+                    <td>
+                        <a href="/object/{{ obj.id }}?group={{ group }}">
+                            {{ highlight(obj.name, search) }}
+                        </a>
+                    </td>
+                <td>
+                    {{ highlight(obj.desc, search) }}
+                </td>
+            {% endfor %}
+            </tbody>
+        </table>
+    </details>
+{% endfor %}
+
+<script>
+    document.querySelectorAll('th.sortable').forEach(headerCell => {
+        headerCell.addEventListener('click', () => {
+            const table = headerCell.closest('table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const colIndex = parseInt(headerCell.dataset.col);
+            const type = headerCell.dataset.type;
+            const asc = headerCell.classList.contains('asc');
+            table.querySelectorAll('th.sortable').forEach(th=>{
+                th.classList.remove('asc','desc');
+            });
+            headerCell.classList.add(asc ? 'desc' : 'asc');
+            const k = asc ? -1 : 1;
+            rows.sort((a,b)=>{
+                let x = a.children[colIndex].innerText.trim();
+                let y = b.children[colIndex].innerText.trim();
+                if(type==="number"){
+                    return (parseFloat(x)-parseFloat(y))*k;
+                }
+                return x.localeCompare(y,'ru',{numeric:true,sensitivity:'base'})*k;
+            });
+            rows.forEach(r=>tbody.appendChild(r));
+        });
+    });
+</script>
+</body>
+</html>
